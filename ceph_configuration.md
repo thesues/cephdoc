@@ -22,7 +22,7 @@
 * osd pool default pgp num   = 128；设置成与上面的pg num相同
 * log file                   = /var/log/ceph/$cluster-$name.log；日志文件存放路径
 * log to syslog              = true；是否将日志写入到syslog
-
+* filestore_xattr_use_omap   = true; 若使用ext4文件系统，由于XATTRs仅为4KB，所以需要设置此值来使用omap来存储ceph XATTRs 
 3.monitor部分：  
 [mon]  
 
@@ -42,10 +42,11 @@
 4.osd部分：  
 [osd]
 
+* filestore xattr use omap = true; 若使用ext4文件系统，由于XATTRs仅为4KB，所以需要设置此值来使用omap来存储ceph XATTRs 
 * osd data                 = /var/lib/ceph/osd/$name；osd数据存放地址
 * osd journal              = /var/lib/ceph/osd/$name/journal；journal存放路径
-* osd journal size         = 2048；journal大小，默认为5120MB
-* filestore max sync interval = 5；最多5s中向文件系统进行数据同步
+* osd journal size         = 1024；journal大小，默认为5120MB。ceph官方提供了一个计算公式：size = {2 * (expected throughput * filestore max sync interval)}
+* filestore max sync interval = 5；最多5s将journal中的数据向文件系统进行同步
 * filestore op threads     = 4；处理后端文件系统事务的线程数
 * osd op threads           = 2；osd线程数，一般设置为cpu数,可通过ceph --admin-daemon /var/run/ceph/ceph-osd.$id.asok config get/set osd_op_threads获取和动态修改此值。
 * [osd.0]
