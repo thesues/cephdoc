@@ -47,7 +47,7 @@
 * osd journal size         = 2048；journal大小，默认为5120MB
 * filestore max sync interval = 5；最多5s中向文件系统进行数据同步
 * filestore op threads     = 4；处理后端文件系统事务的线程数
-* osd op threads           = 2；osd线程数，一般设置为cpu数
+* osd op threads           = 2；osd线程数，一般设置为cpu数,可通过ceph --admin-daemon /var/run/ceph/ceph-osd.$id.asok config get/set osd_op_threads获取和动态修改此值。
 * [osd.0]
   * host                     = alpha;osd的hostname
   
