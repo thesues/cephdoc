@@ -1,176 +1,185 @@
-# ceph deploy
+#准备环境
 
-	1. Preparation
+## 准备/etc/hosts
 
-##
+## 规划网络，分为public_network 和 cluster_network
 
-		1. Basic
-			1. Install OS
-			2. configure Ntp
-			3. configure Hostname
-		2. Yum Repositories Configuration
-		3. Configure Ssh No-password Login
-		4. Plan Your Network, Storage, Journal
+## 增加ceph的yum repo
 
-	2. Add Monitor
-	3. Add Osd
-	4. Remove Monitor
-	5. Remove Osd
-	6. Bash Script
-	7. Ceph.conf
-	8. Ntp
+编辑文件/etc/yum.repos.d/ceph.repo
 
-##
+	[Ceph]
+	baseurl=http://10.150.140.95/update/
+	name=Ceph packages
+	enabled=1
+	gpgcheck=0
 
-	Nitice:
-		1. For old kernels (<2.6.33), disable the write cache if the journal is on a raw drive. Newer kernels should work fine.
-		   Hdparm –W 0 /dev/had 0
-		2. For Ext4. Setting Filestore xattr use omap = true
-		3. One Ceph Monitor per host, and no commingling of Ceph OSD Daemons with Ceph Monitors
-		4. The Ceph Monitor name is the host name
+## 配置ntp
 
-#
+
+## 增加新用户cephadmin
+
+	ssh root@ceph-server
+	useradd -d /home/cephadmin -m cephadmin
+	passwd cephadmin
+
+	echo "cephadmin ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/cephadmin
+	chmod 0440 /etc/sudoers.d/cephadmin
+
+## 配置用户cephadmin ssh无密码登陆
+
+## 打开防火墙
+
+* 端口 6789 用于monitor
+* 端口 6800:7100 用于osd
+
+## 禁用SELINUX
+
+	sudo setenforce 0
+
+##所有节点安装ceph
 	
-	1) Preparation
+	yum install ceph
 
-##
 
-	1. Basic
+# 安装monitor节点
 
-### 
+	yum install ceph-deploy
 
-		1. Install OS(osd, monitor)
-		2. Congigure hostname
-		3. Configure ntp client
-##
-		
-	2. Install letv repo
-		rpm -ivh http://openstack.oss.letv.cn/repo/letv-rdo-release-havana-8.1.noarch.rpm
-	 	//rpm -ivh http://openstack.oss.letv.cn/repo/letv-rdo-release-icehouse-4.1.noarch.rpm 
-	3. Choose a machine as deploy node. Make sure you can login on other nodes without input password
-		\# ssh-keygen
-		\# ssh-copy-id root@node_hostname
-		\# yum install ceph-deploy -y
-	4. Plan Your Network, Storage, Journal
-		1. it better separate public and cluster network. 
-			For example. 
-			public_network = 10.154.249.0/24
-			cluster_network = 11.154.249.0/24
-		2. it better use a dedicated disk as journal.
-		3. plan your storage space
 
-#
-
-	2. Add initial Monitor
-		\# ceph install  node-name1 node-name2 {...} --no-adjust-repos  ; install ceph package
-		\# ceph-deploy  new cephosd1-mona {...}
-		\# confugre your network. Edit ceph.conf, add public and cluster network.
-		\# ceph-deploy mon create-initial cephosd1-mona {...}
-
-		Add more monitors.
-		\# Edit ceph.conf, append monitor's hostname to mon_initial_members, monitor's ip to mon_host.
-		\# ceph-deploy mon create cephosd2-monb
-		All monitors are up now.
-
-#
-
-	3. Add osd. Here i use a raw disk as journal
-
-##
-		\# ceph-deploy disk zap cephosd1-mona:vdX ;delete all partitions of the dedicated disk
-		\# ceph-deploy --overwrite-conf disk prepare cephosd1-mona:vdd:vdc
-		\# ceph-deploy disk activate cephosd1-mona:vdd1:vdc1 ; if fail, try to rm node's /var/lib/ceph/bootstrap-osd/ceph.keyring.
-
-		if you do not use raw disk directly, run the following commands
-		\# ssh osd node, mkdir /var/lib/ceph/osd//osd-$id
-		\# ceph-deploy osd prepare {ceph-node}:/path/to/directory
-		\# ceph-deploy osd activate {ceph-node}:/path/to/directory
-
-#
-	4. Remove monitor
-
-##
-		\# ceph-deploy mon destroy {host-name [host-name]...}
-
-#
-
-	5. Remove osd. ceph-deploy doesnot support remove osd, so before run the follwoing commands, go to the osd node first.
-
-##
-		\# ceph osd out id
-		\# /etc/init.d/ceph stop osd
-		\# ceph osd crush remove osd.$id
-		\# ceph osd crush remove `hostname -s`
-		\# ceph auth del osd.$id
-		\# ceph osd rm $id
-
-#
-
-	6. Bash
-
-##
-		1. script remove osd
-		----------removeosd.sh----------------------------------------
-		[root@cephosd1-mona ceph]# cat removeosd.sh 
-				#!/bin/bash
-
-				if [ $# -ne 1 ] ;then
-				exit
-				fi
-
-				i=$1
-				ceph osd out $i
-				/etc/init.d/ceph stop osd
-				ceph osd crush remove osd.$i
-				ceph osd crush remove `hostname -s`
-				ceph auth del osd.$i
-				ceph osd rm $i
-
-				#modify ceph.conf, delete the item and distribute
-		----------------------------------------------------------------
-
-#
-	7. Ceph.conf
-
-##
+## 开始配置ceph.conf
 	
-		[osd]
-		osd_op_threads = 10
-		filestore_op_threads = 10
-		osd_recovery_threads = 5
-		osd_disk_threads = 5
-		osd_data = /var/lib/ceph/osd/ceph-$id
-		osd_journal = /dev/vdc1
-		[global]
-		auth_service_required = cephx
-		auth_client_required = cephx
-		auth_cluster_required = cephx
-		osd_pool_default_size = 3
-		osd_pool_default_min_size = 2
-		osd_pool_default_pg_num = 128
-		osd_pool_default_pgp_num = 128
-		public_network = 10.154.249.0/24
-		cluster_network = 11.154.249.0/24
-		mon_host = 10.154.249.3,10.154.249.4,10.154.249.5
-		mon_initial_members = cephosd1-mona,cephosd2-monb,cephosd3-monc
-		osd_crush_chooseleaf_type = 1
-		[mon]
-		mon_clock_drift_warn_backoff = 30
-		mon_osd_down_out_interval = 120
-		mon_clock_drift_allowed = 1
 
-#
 
-	8. Ntp
+	su - cephadmin
+	mkdir mycluster
 
-##
+此后所有操作都用cephadmin用户在mycluster下进行
+	
+	ceph-deploy new 初始moniter节点
+	
+## 修改ceph.conf文件
 
-		Ntp配置，安装ntpd 和ntpdate
-		1.	Ntp客户端: /etc/crontab
-		  30 8  *  *  * root /usr/sbin/ntpdate 10.154.249.108
-		2.	Ntp服务端;  Vi /etc/ntp.conf
-		restrict 10.154.249.0 mask 255.255.0.0 nomodify
-		server 127.127.1.0
-		fudge 127.127.1.0 stratum 8
-		3.	restart ntpd
+其中ms_nocrc是给cpu受限的机器使用
+
+	[global]
+	auth_service_required = cephx
+	filestore_xattr_use_omap = true
+	auth_client_required = cephx
+	auth_cluster_required = cephx
+	mon_host = 10.182.200.24,10.182.200.78,10.182.200.77
+	mon_initial_members = <初始moniter节点>
+	fsid = ee4ea70c-093f-4797-8d3d-871c0aacc92b
+	osd_pool_default_size = 3
+	osd_pool_default_min_size = 2
+	osd_pool_default_pg_num = 128
+	osd_pool_default_pgp_num = 128
+	ms_nocrc=true
+
+
+## 安装monitor节点
+	
+	ceph-deploy mon create-initial
+	
+## 推送admin keyring到所有节点
+	
+	sudo chmod +r /etc/ceph/ceph.client.admin.keyring
+	ceph-deploy admin <所有节点>
+
+保留mycluster文件架，为以后自动添加monitor节点准备
+
+## 检查
+	
+	ceph -s
+
+状态是HEALTH_ERR,无osd，mon节点都已经加入
+
+# 手动安装OSD节点
+
+所有osd节点用手动安装的方式, 使用root用户
+
+创建osd号
+	
+	ceph osd create
+
+返回一个数字，这个数字就是osd的唯一号,记录为{osd-number}
+
+	ceph osd tree
+
+检查出现osd.0,状态是down.
+
+准备ceph osd文件夹
+	
+	mkdir /var/lib/ceph/osd/ceph-{osd-number}
+	mkfs -t xfs /dev/disk
+	mount /dev/disk /var/lib/ceph/osd/ceph-{osd-number}
+
+在文件夹内建立osd keyring等数据
+	
+	ceph-osd -i {osd-num} --mkfs --mkkey
+
+
+检查文件夹/var/lib/ceph/osd/ceph-{osd-number}内容, 并建立sysvinit
+
+	touch  /var/lib/ceph/osd/ceph-{osd-number}/sysvinit
+
+添加osd权限
+
+	ceph auth add osd.{osd-num} osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-{osd-num}/keyring	
+	
+检查权限是否已经添加
+
+	ceph auth list
+
+加入osd，权值1代表1T，所有如果是500G硬盘，就为0.5
+	
+	ceph osd crush add osd.{osd-num} {weight} root=default host={机器名}
+
+启动ceph osd
+
+	/etc/init.d/ceph start osd
+
+检查是否加入集群
+
+	ceph osd tree
+	ceph -s
+
+
+
+# 操作ceph集群
+
+
+## 删除默认的pool
+
+	ceph osd pool delete metadata  --yes-i-really-really-mean-it
+	ceph osd pool delete rbd  --yes-i-really-really-mean-it
+	ceph osd pool delete data  --yes-i-really-really-mean-it
+	
+## 建立新pool
+	
+pgsnum = (osd数量 * 100) / 副本数 向上对齐
+
+	ceph osd pool create ${poolname} {pgnum} {pgnum}
+	ceph osd pool set video size {副本数}
+
+## 删除osd
+
+	ceph osd out {osd-num}
+	/etc/init.d/ceph stop osd.{osd-num}
+	ceph osd crush remove osd.{osd-num}
+	ceph osd crush remove `hostname -s`
+	ceph auth del osd.{osd-num}
+	ceph osd rm osd.0
+
+## 增加一个bucket
+
+例如增加啊一个bucket, 类型为rack, 名字为L1
+
+	ceph osd crush add-bucket L1 rack
+	ceph osd crush move L1 root=default
+
+
+
+
+
 
