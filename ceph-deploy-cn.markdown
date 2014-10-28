@@ -37,9 +37,9 @@
 
 	sudo setenforce 0
 
-##所有节点安装ceph
+##所有节点安装ceph和客户端工具
 	
-	yum install ceph
+	yum install ceph striprados
 
 
 # 安装monitor节点
