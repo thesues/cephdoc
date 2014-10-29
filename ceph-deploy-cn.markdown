@@ -12,6 +12,7 @@
 	baseurl=http://10.150.140.95/update/
 	name=Ceph packages
 	enabled=1
+    priority=1
 	gpgcheck=0
 
 ## 配置ntp
@@ -75,6 +76,8 @@
 	osd_pool_default_pg_num = 128
 	osd_pool_default_pgp_num = 128
 	ms_nocrc=true
+    public_network = x.x.x.x/x
+    cluster_network = x.x.x.x/x
 
 
 ## 安装monitor节点
