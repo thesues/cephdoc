@@ -1,3 +1,4 @@
+
 #准备环境
 
 ## 准备/etc/hosts
@@ -76,8 +77,8 @@
 	osd_pool_default_pg_num = 128
 	osd_pool_default_pgp_num = 128
 	ms_nocrc=true
-    public_network = x.x.x.x/x
-    cluster_network = x.x.x.x/x
+	public_network = x.x.x.x/x
+	cluster_network = x.x.x.x/x
 
 
 ## 安装monitor节点
@@ -138,6 +139,10 @@
 	
 	ceph osd crush add osd.{osd-num} {weight} root=default host={机器名}
 
+检查osd列表
+    
+    ceph osd tree
+
 启动ceph osd
 
 	/etc/init.d/ceph start osd
@@ -146,7 +151,6 @@
 
 	ceph osd tree
 	ceph -s
-
 
 
 # 操作ceph集群
@@ -176,13 +180,20 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 
 ## 增加一个bucket
 
-例如增加啊一个bucket, 类型为rack, 名字为L1
+例如增加一个bucket, 类型为rack, 名字为L1
 
 	ceph osd crush add-bucket L1 rack
 	ceph osd crush move L1 root=default
+	ceph osd crush move osd.0 rack=L1
 
 
+## 清理ceph数据
 
+保证有一个干净的ceph环境
 
-
+    rm /etc/ceph/*.keyring
+    rm /etc/ceph/*.conf
+    rm /var/log/ceph/*
+    rm /var/lib/ceph/{bootstrap-mds,bootstrap-osd,mds,mon,osd}/*
+    ceph auth list #检查keyring被清除
 
