@@ -62,23 +62,26 @@
 	
 ## 修改ceph.conf文件
 
-其中ms_nocrc是给cpu受限的机器使用
+其中ms nocrc是给cpu受限的机器使用
+
+如果确定osd的文件系统是xfs, filestore xattr use omap 为false. 同时filestore journal writeahead为true
+
 
 	[global]
-	auth_service_required = cephx
-	filestore_xattr_use_omap = true
-	auth_client_required = cephx
-	auth_cluster_required = cephx
-	mon_host = 10.182.200.24,10.182.200.78,10.182.200.77
-	mon_initial_members = <初始moniter节点>
+	auth service required = cephx
+	filestore xattr use omap = true
+	auth client required = cephx
+	auth cluster required = cephx
+	mon host = 10.182.200.24,10.182.200.78,10.182.200.77
+	mon initial members = <初始moniter节点>
 	fsid = ee4ea70c-093f-4797-8d3d-871c0aacc92b
-	osd_pool_default_size = 3
-	osd_pool_default_min_size = 2
-	osd_pool_default_pg_num = 128
-	osd_pool_default_pgp_num = 128
-	ms_nocrc=true
-	public_network = x.x.x.x/x
-	cluster_network = x.x.x.x/x
+	osd pool default size = 3
+	osd pool default min size = 2
+	osd pool default pg num = 128
+	osd pool default pgp num = 128
+	ms nocrc=true
+	public network = x.x.x.x/x
+	cluster network = x.x.x.x/x
 
 
 ## 安装monitor节点
@@ -116,7 +119,7 @@
 	
 	mkdir /var/lib/ceph/osd/ceph-{osd-number}
 	mkfs -t xfs /dev/disk
-	mount /dev/disk /var/lib/ceph/osd/ceph-{osd-number}
+	mount -o noatime /dev/disk /var/lib/ceph/osd/ceph-{osd-number}
 
 在文件夹内建立osd keyring等数据
 	
@@ -155,7 +158,6 @@
 
 # 操作ceph集群
 
-
 ## 删除默认的pool
 
 	ceph osd pool delete metadata  --yes-i-really-really-mean-it
@@ -168,6 +170,12 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 
 	ceph osd pool create ${poolname} {pgnum} {pgnum}
 	ceph osd pool set video size {副本数}
+
+## 查看参数
+	
+
+	ceph --admin-daemon /var/run/ceph/ceph-osd.$id.asok config show
+
 
 ## 删除osd
 
@@ -196,4 +204,14 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     rm /var/log/ceph/*
     rm /var/lib/ceph/{bootstrap-mds,bootstrap-osd,mds,mon,osd}/*
     ceph auth list #检查keyring被清除
+
+## ceph osd 维护模式
+
+    ceph osd set noout
+    /etc/init.d/ceph stop osd.{osd-num}
+
+##维护完成
+
+    /etc/init.d/ceph start osd.{osd-num}
+    ceph osd unset noout
 
