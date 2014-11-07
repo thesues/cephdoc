@@ -218,6 +218,7 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 
 
 ##手工添加mon节点
+
 1. 取得`client.admin`的keyring，保存到文件`/etc/ceph/ceph.client.admin.keyring`
 2. 取得`mon.`的keyring，保存到任意位置，记为`{mon.keyring}`
 3. 取得monitor map，保存到任意位置，记为`{mon.map}`
