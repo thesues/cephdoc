@@ -211,13 +211,13 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     /etc/init.d/ceph stop osd.{osd-num}
 
 
-##维护完成
+## 维护完成
 
     /etc/init.d/ceph start osd.{osd-num}
     ceph osd unset noout
 
 
-##手工添加mon节点
+## 手工添加mon节点
 
 1. 取得`client.admin`的keyring，保存到文件`/etc/ceph/ceph.client.admin.keyring`
 2. 取得`mon.`的keyring，保存到任意位置，记为`{mon.keyring}`
