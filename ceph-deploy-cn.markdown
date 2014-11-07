@@ -215,3 +215,21 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     /etc/init.d/ceph start osd.{osd-num}
     ceph osd unset noout
 
+##手工添加mon节点
+1. 取得`client.admin`的keyring，保存到文件`/etc/ceph/ceph.client.admin.keyring`
+2. 取得`mon.`的keyring，保存到任意位置，记为`{mon.keyring}`
+3. 取得monitor map，保存到任意位置，记为`{mon.map}`
+		
+		ceph mon getmap -o {mon.map}
+4. Optional. 更新**所有mon节点**的配置文件，添加新节点的IP地址到`ceph.conf` `[global]`字段的`mon_host`
+5. 依上文配置文件配置新节点的`ceph.conf`
+6. 生成mon文件系统
+	
+		ceph-mon --public_addr ${节点公网IP} --mkfs --id ${名称} --keyring ${mon.keyring} --monmap {mon.map}
+7. 告诉ceph可以启动了
+		
+		touch /var/lib/ceph/mon/ceph-{名称}/done
+		touch /var/lib/ceph/mon/ceph-{名称}/sysvinit
+8. 启动mon服务
+
+		service ceph start mon.{名称}
