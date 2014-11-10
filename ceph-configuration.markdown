@@ -70,6 +70,11 @@ scrub参数
 * osd client op priority  =63 客户端操作优先级
 * osd recovery op priority =10 恢复操作优先级
 
+scrub配置命令行
+* ceph osd set noscrub          关闭scrub
+* ceph osd set nodeep-scrub     关闭deep scrub
+* ceph pg deep-scrub <pg_id>    启动对一个pg进行deep scrub
+
 backfill参数
 
 * osd max backfills   = 10 单个osd允许的最大backfill数量
