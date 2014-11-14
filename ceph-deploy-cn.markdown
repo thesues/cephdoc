@@ -66,6 +66,8 @@
 
 如果确定osd的文件系统是xfs, filestore xattr use omap 为false. 同时filestore journal writeahead为true
 
+如果使用自定义的crushmap, 设置osd crush update on start = false
+
 
 	[global]
 	auth service required = cephx
@@ -82,6 +84,17 @@
 	ms nocrc=true
 	public network = x.x.x.x/x
 	cluster network = x.x.x.x/x
+
+	[osd]
+	osd max backfills = 4
+	osd backfill scan min = 32
+	osd backfill scan max = 512
+	osd recovery max active = 2
+	osd recovery max chunk = 4M
+	osd recovery threads = 1
+	journal max write bytes = 32M
+	journal queue max bytes = 32M
+
 
 
 ## 安装monitor节点
@@ -184,7 +197,14 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 	ceph osd crush remove osd.{osd-num}
 	ceph osd crush remove `hostname -s`
 	ceph auth del osd.{osd-num}
-	ceph osd rm osd.0
+	ceph osd rm osd.{osd-num}
+
+## 查看crushmap
+	
+	ceph osd getcrushmap -o crush.out
+	crushtool -d crush.out -o crush.txt
+	ceph osd crush dump
+	ceph osd crush rule dump
 
 ## 增加一个bucket
 
@@ -192,7 +212,11 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 
 	ceph osd crush add-bucket L1 rack
 	ceph osd crush move L1 root=default
-	ceph osd crush move osd.0 rack=L1
+	ceph osd crush move osd.{osd-num} rack=L1
+
+## 加入一个自定义的osd
+
+	ceph osd crush add osd.{osd-num} {weight} {bucket-type}={bucket-name}
 
 
 ## 清理ceph数据
