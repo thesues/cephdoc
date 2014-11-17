@@ -68,6 +68,8 @@
 
 如果使用自定义的crushmap, 设置osd crush update on start = false
 
+如果使用osd-domain, 设置osd crush chooseleaf type = {osd-domain-num}
+
 
 	[global]
 	auth service required = cephx
@@ -253,6 +255,7 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 6. 生成mon文件系统
 	
 		ceph-mon --public_addr ${节点公网IP} --mkfs --id ${名称} --keyring ${mon.keyring} --monmap {mon.map}
+
 7. 告诉ceph可以启动了
 		
 		touch /var/lib/ceph/mon/ceph-{名称}/done
