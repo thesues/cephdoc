@@ -34,7 +34,7 @@
 * mon clock drift warn backoff = 30；如果时间差过大，则30s后会重新告警
 * mon osd full ratio         = .95；磁盘使用量超过95%，则认为该OSD已满
 * mon osd nearfull ratio     = .85；磁盘使用量超过85%，则认为该OSD将要满了
-* mon osd down out interval  = 300；当一个OSD被其他OSD标记为down，超过300s后仍没回应，则认为down和out
+* mon osd down out interval  = 300；当一个OSD被其他OSD标记为down，超过300s后仍没回应，则认为down和out, 可以设置这个选项为0, 减小硬盘损害对系统的影响.设置为0会让系统不能自动复制足够的副本
 * [mon.alpha]
   * host                     = alpha;monitor的hostname
   * mon addr                 = 192.168.0.10:6789；monitor的IP:PORT组合
