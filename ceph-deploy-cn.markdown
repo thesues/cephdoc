@@ -88,11 +88,11 @@
 	cluster network = x.x.x.x/x
 
 	[osd]
-	osd max backfills = 2
+	osd max backfills = 1
 	osd backfill scan min = 16
 	osd backfill scan max = 256
 	filestore op threads = 4
-	osd recovery max active = 2
+	osd recovery max active = 1
 	osd recovery max chunk = 32M
 	osd recovery threads = 1
 	journal max write bytes = 32M
