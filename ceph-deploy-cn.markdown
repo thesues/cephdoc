@@ -97,6 +97,7 @@
 	osd recovery threads = 1
 	journal max write bytes = 32M
 	journal queue max bytes = 32M
+	mon osd down out interval  = 900
 
 
 
