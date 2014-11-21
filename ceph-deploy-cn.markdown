@@ -232,6 +232,7 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     rm /var/log/ceph/*
     rm /var/lib/ceph/{bootstrap-mds,bootstrap-osd,mds,mon,osd}/*
     ceph auth list #检查keyring被清除
+    kill -9 $pid_osd $pid_mds $pid_mon #杀死相关进程
 
 ## ceph osd 维护模式
 
