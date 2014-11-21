@@ -177,9 +177,9 @@
 
 ## 删除默认的pool
 
-	ceph osd pool delete metadata  --yes-i-really-really-mean-it
-	ceph osd pool delete rbd  --yes-i-really-really-mean-it
-	ceph osd pool delete data  --yes-i-really-really-mean-it
+	ceph osd pool delete metadata metadata --yes-i-really-really-mean-it
+	ceph osd pool delete rbd rbd --yes-i-really-really-mean-it
+	ceph osd pool delete data data --yes-i-really-really-mean-it
 	
 ## 建立新pool
 	
