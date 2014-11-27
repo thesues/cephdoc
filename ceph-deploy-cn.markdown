@@ -9,11 +9,11 @@
 
 编辑文件/etc/yum.repos.d/ceph.repo
 
-	[Ceph]
+	[ceph-updates]
 	baseurl=http://10.150.140.95/update/
 	name=Ceph packages
 	enabled=1
-    priority=1
+	priority=1
 	gpgcheck=0
 
 ## 配置ntp
