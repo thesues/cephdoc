@@ -301,3 +301,42 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 		
 		service ceph start mds.0
 		
+
+## 在cephfs中使用erasure code pool的部署：
+
+1.创建ec的profile：
+
+		ceph osd erasure-code-profile set mds_profile k=3 m=2 ruleset-failure-domain=host
+
+2.创建metadata的pool：
+
+    	ceph osd pool create metadata 4000 4000
+
+3.创建ec data pool,名字为cold-storage:
+
+
+		ceph osd pool create cold-storage 4000 4000 erasure mds_profile
+ 
+4.创建cache storage pool:
+
+		ceph osd pool create cache-storage 4000 4000
+
+5.建立cache和cold的连接：
+
+		ceph osd tier add  cold-storage cache-storage
+
+6.设置cache的模式为writeback:
+
+		ceph osd tier cache-mode cache-storage writeback
+
+7.设置overlay
+
+		ceph osd tier set-overlay cold-storage cache-storage
+
+8..创建fs
+
+		ceph fs new cephfs_20141201 metadata cold-storage
+
+9.设置hit_set_type 
+
+		ceph osd pool set cache-storage hit_set_type bloom
