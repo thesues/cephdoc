@@ -296,3 +296,8 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     	[mds.0]
 
       	host = {hostname}
+      	
+4. 启动mds进程：
+		
+		service ceph start mds.0
+		
