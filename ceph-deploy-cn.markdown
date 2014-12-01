@@ -274,3 +274,25 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 8. 启动mon服务
 
 		service ceph start mon.{名称}
+
+
+## 手工添加mds server
+
+1. 创建目录：
+    
+    **`sudo mkdir /var/lib/ceph/mds/mds.0`**
+
+2. 生成mds.0的keyring，保存到/var/lib/ceph/mds/mds.0/mds.0.keyring：
+    **`sudo ceph auth get-or-create mds.0 mds 'allow ' osd 'allow *' mon 'allow rwx' > /var/lib/ceph/mds/mds.0/mds.0.keyring`**
+
+3. 编辑ceph.conf:
+ 
+		[mds]
+
+      	mds data = /var/lib/ceph/mds/mds.$id
+
+      	keyring = /var/lib/ceph/mds/mds.$id/mds.$id.keyring
+    
+    	[mds.0]
+
+      	host = {hostname}
