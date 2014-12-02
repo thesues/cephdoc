@@ -252,17 +252,17 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 
 2. 取得`mon.`的keyring，保存到任意位置，记为`{mon.keyring}`
 	
-	ceph auth get mon. -o /tmp/auth
+	ceph auth get mon. -o {mon.keyring}
 	
-3. 取得monitor map，保存到任意位置，记为`{mon.map}`
+3. 取得monitor map，保存到任意位置，记为{mon.map}
 
-	ceph mon getmap -o /tmp/map
+	ceph mon getmap -o {mon.map}
 		
 4. Optional. 更新**所有mon节点**的配置文件，添加新节点的IP地址到`ceph.conf` `[global]`字段的`mon_host`
 5. 依上文配置文件配置新节点的`ceph.conf`
 6. 生成mon文件系统
 	
-		ceph-mon -i {mon-id} --mkfs --monmap /tmp/map --keyring /tmp/key
+		ceph-mon -i {mon-id} --mkfs --monmap {mon.map} --keyring {mon.keyring}
 7. 加入集群
 
 		ceph mon add {mon-id} {ip}
