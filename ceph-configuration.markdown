@@ -109,3 +109,6 @@ journal参数
 * rgw data                  = /var/lib/ceph/radosgw/$name；数据存放路径
 * host                      =  ceph-radosgw；client的hostname
 * keyring                   = /etc/ceph/ceph.client.radosgw.keyring
+
+7.mds部分
+* mds max file size         = 1125899906842624；设置mds支持的最大文件大小为1PB，此值也可通过ceph mds set max_file_size 1125899906842624修改
