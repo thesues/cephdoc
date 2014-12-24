@@ -239,11 +239,21 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
     ceph osd set noout
     /etc/init.d/ceph stop osd.{osd-num}
 
+## ceph injectargs 维护模式
+
+	#How often an Ceph OSD Daemon pings its peers (in seconds).
+	#默认为6
+	ceph tell osd.* injectargs '--osd-heartbeat-interval 10'
+
+	#The elapsed time when a Ceph OSD Daemon hasn’t shown a heartbeat that the Ceph Storage Cluster considers it down.
+	#默认为20
+	ceph tell osd.* injectargs '--osd-heartbeat-grace 30'
+
 
 ## 维护完成
 
-    /etc/init.d/ceph start osd.{osd-num}
-    ceph osd unset noout
+	/etc/init.d/ceph start osd.{osd-num}
+	ceph osd unset noout
 
 
 ## 手工添加mon节点
