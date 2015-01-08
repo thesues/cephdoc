@@ -350,3 +350,31 @@ pgsnum = (osd数量 * 100) / 副本数 向上对齐
 9.设置hit_set_type 
 
 		ceph osd pool set cache-storage hit_set_type bloom
+
+# 内核设置
+
+	####ceph tcp tunning####
+	net.core.rmem_max = 33554432
+	net.core.wmem_max = 33554432
+	net.core.rmem_default = 33554432
+	net.core.wmem_default = 33554432
+	net.core.optmem_max = 40960
+	net.ipv4.tcp_rmem = 4096 87380 33554432
+	net.ipv4.tcp_wmem = 4096 65536 33554432
+
+	#increase the max packet backlog
+	net.core.somaxconn = 1024
+	net.core.netdev_max_backlog = 50000
+	net.ipv4.tcp_max_syn_backlog = 30000
+	net.ipv4.tcp_max_tw_buckets = 2000000
+	net.ipv4.tcp_tw_reuse = 1
+	net.ipv4.tcp_fin_timeout = 10
+
+	#Disable TCP slow start on idle connections
+	net.ipv4.tcp_slow_start_after_idle = 0
+
+ceph radosgw apache 打开keepalive后,设置内核参数(测试中)
+
+	net.ipv4.tcp_keepalive_probes = 20
+	net.ipv4.tcp_keepalive_intvl = 60
+	net.ipv4.tcp_keepalive_time = 600
