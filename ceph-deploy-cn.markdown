@@ -181,6 +181,9 @@
 	ceph osd pool delete rbd rbd --yes-i-really-really-mean-it
 	ceph osd pool delete data data --yes-i-really-really-mean-it
 	
+## 删除pool中的object
+	rados rm <objectname> -p <poolname>；如果要删除全部object，则使用rados ls -p poolname列出objects，再调rados rm
+	
 ## 建立新pool
 	
 pgsnum = (osd数量 * 100) / 副本数 向上对齐
