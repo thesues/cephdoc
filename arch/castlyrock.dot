@@ -1,0 +1,42 @@
+digraph G {
+
+	graph [bb="0 0 311 260",
+		nodesep=0.05,
+		rankdir=TB
+	];
+	node [label="\N",
+		shape=record
+	];
+	edge [side=left];
+	"CDN";
+	"Hadoop";
+	"wuzei01";
+	"wuzei02(G)";
+	"castlyrock-22(C)";
+	"castlyrock-23";
+	"castlyrock...";
+	"castlyrock-36";
+	"castlyrock-39";
+
+	"castlyrock-22(C)" -> "wuzei01"; 
+	"castlyrock-23" -> "wuzei01"; 
+	"castlyrock..." -> "wuzei01"; 
+	"castlyrock-36" -> "wuzei01"; 
+	"castlyrock-39" -> "wuzei01"; 
+
+	"castlyrock-22(C)" -> "wuzei02(G)"; 
+	"castlyrock-23" -> "wuzei02(G)"; 
+	"castlyrock..." -> "wuzei02(G)"; 
+	"castlyrock-36" -> "wuzei02(G)"; 
+	"castlyrock-39" -> "wuzei02(G)"; 
+
+	"Hadoop" -> "castlyrock-22(C)"; 
+	"Hadoop" -> "castlyrock-23"; 
+	"Hadoop" -> "castlyrock..."; 
+	"Hadoop" -> "castlyrock-36"; 
+	"Hadoop" -> "castlyrock-39"; 
+	
+	"wuzei01" -> "CDN";
+	"wuzei02(G)" -> "CDN";
+
+}

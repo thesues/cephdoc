@@ -1,0 +1,58 @@
+digraph G {
+
+	graph [bb="0 0 311 260",
+		nodesep=0.05,
+		rankdir=TB
+	];
+	node [label="\N",
+		shape=record
+	];
+	edge [side=left];
+	"ceph-apache01";
+	"ceph-apache02";
+	"ceph-apache03";
+	"ceph-apache04";
+	"ceph-53(C)";
+	"ceph-54";
+	"ceph-55";
+	"ceph-56";
+	"ceph-60";
+	"riverrun-calamari(G)";
+	"LVS1";
+	"LVS2";
+	"World";
+
+	"LVS1" -> "ceph-apache01";
+	"LVS1" -> "ceph-apache02";
+	"LVS2" -> "ceph-apache03";
+	"LVS2" -> "ceph-apache04";
+        "World" -> "LVS1";
+	"World" -> "LVS2";
+
+	"ceph-apache01" -> "ceph-53(C)";
+	"ceph-apache01" -> "ceph-54";
+	"ceph-apache01" -> "ceph-55";
+	"ceph-apache01" -> "ceph-56";
+	"ceph-apache01" -> "ceph-60";
+
+	"ceph-apache02" -> "ceph-53(C)";
+	"ceph-apache02" -> "ceph-54";
+	"ceph-apache02" -> "ceph-55";
+	"ceph-apache02" -> "ceph-56";
+	"ceph-apache02" -> "ceph-60";
+
+	"ceph-apache03" -> "ceph-53(C)";
+	"ceph-apache03" -> "ceph-54";
+	"ceph-apache03" -> "ceph-55";
+	"ceph-apache03" -> "ceph-56";
+	"ceph-apache03" -> "ceph-60";
+
+	"ceph-apache04" -> "ceph-53(C)";
+	"ceph-apache04" -> "ceph-54";
+	"ceph-apache04" -> "ceph-55";
+	"ceph-apache04" -> "ceph-56";
+	"ceph-apache04" -> "ceph-60";
+
+	"riverrun-calamari(G)" -> "ceph-53(C)";
+	
+}
